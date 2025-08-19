@@ -5,7 +5,7 @@ export async function GET() {
   const title = 'Daily Blog';
   const topic = 'Technology';
 
-  await fetch('https://blogs-automation/api/generate-blog', {
+  await fetch('https://blogs-automation.vercel.app/api/generate-blog', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ title, topic }),
