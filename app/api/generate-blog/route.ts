@@ -20,17 +20,17 @@ const sanity = createClient({
   useCdn: false,
 });
 
-// Upload a default image
-// Path to your default image
-const imagePath = path.join(process.cwd(), "public", "blog.jpg");
+// // Upload a default image
+// // Path to your default image
+// const imagePath = path.join(process.cwd(), "public", "blog.jpg");
 
-// Read the file into a buffer
-const fileBuffer = fs.readFileSync(imagePath);
+// // Read the file into a buffer
+// const fileBuffer = fs.readFileSync(imagePath);
 
-// Upload to Sanity
-const uploadedImage = await sanity.assets.upload("image", fileBuffer, {
-  filename: "default-blog.jpg",
-});
+// // Upload to Sanity
+// const uploadedImage = await sanity.assets.upload("image", fileBuffer, {
+//   filename: "default-blog.jpg",
+// });
 
 // ======= Google Gemini Setup =======
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
@@ -74,6 +74,20 @@ const slugify = (s: string) =>
 // ======= Main Handler =======
 export async function GET(req: NextRequest) {
   try {
+
+    // Upload a default image
+    // Path to your default image
+    const imagePath = path.join(process.cwd(), "public", "blog.jpg");
+
+    // Read the file into a buffer
+    const fileBuffer = fs.readFileSync(imagePath);
+
+    // Upload to Sanity
+    const uploadedImage = await sanity.assets.upload("image", fileBuffer, {
+      filename: "default-blog.jpg",
+    });
+
+
     // 🔒 Secret check (only in production)
     if (process.env.NODE_ENV === "production" && process.env.CRON_SECRET) {
       const provided = req.headers.get("x-cron-secret");
