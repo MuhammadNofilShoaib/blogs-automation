@@ -1,15 +1,8 @@
-import { createClient } from "@sanity/client";
-
-const sanity = createClient({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET!,
-  apiVersion: "2023-10-01",
-  useCdn: true,
-});
+import { client } from "@/sanity/lib/client";
 
 export async function GET() {
   try {
-    const blogs = await sanity.fetch(
+    const blogs = await client.fetch(
       `*[_type == "post"] | order(publishedAt desc){
         _id,
         title,
