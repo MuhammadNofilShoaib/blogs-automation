@@ -6,7 +6,6 @@ import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 
-
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -19,18 +18,6 @@ const sanity = createClient({
   token: process.env.SANITY_API_TOKEN,
   useCdn: false,
 });
-
-// // Upload a default image
-// // Path to your default image
-// const imagePath = path.join(process.cwd(), "public", "blog.jpg");
-
-// // Read the file into a buffer
-// const fileBuffer = fs.readFileSync(imagePath);
-
-// // Upload to Sanity
-// const uploadedImage = await sanity.assets.upload("image", fileBuffer, {
-//   filename: "default-blog.jpg",
-// });
 
 // ======= Google Gemini Setup =======
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
@@ -78,23 +65,21 @@ export async function GET(req: NextRequest) {
     // Upload a default image
     // Path to your default image
     const imagePath = path.join(process.cwd(), "public", "blog.jpg");
-
     // Read the file into a buffer
     const fileBuffer = fs.readFileSync(imagePath);
-
     // Upload to Sanity
     const uploadedImage = await sanity.assets.upload("image", fileBuffer, {
-      filename: "default-blog.jpg",
+      filename: "blog.jpg",
     });
 
 
     // 🔒 Secret check (only in production)
-    if (process.env.NODE_ENV === "production" && process.env.CRON_SECRET) {
-      const provided = req.headers.get("x-cron-secret");
-      if (provided !== process.env.CRON_SECRET) {
-        return new Response("Forbidden", { status: 403 });
-      }
-    }
+    // if (process.env.NODE_ENV === "production" && process.env.CRON_SECRET) {
+    //   const provided = req.headers.get("x-cron-secret");
+    //   if (provided !== process.env.CRON_SECRET) {
+    //     return new Response("Forbidden", { status: 403 });
+    //   }
+    // }
 
     // ====== Step 1: Generate blog JSON with Gemini ======
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -139,8 +124,8 @@ export async function GET(req: NextRequest) {
 
       Return ONLY JSON. Example:
       {
-        "title": "Why Most Website Copy Fails (And How to Fix It in 2025)",
-        "skillType": "copywriter",
+        "title": "Why Most Website Copy Fails (And How to Fix It in 2025) or something about Audio engineering or English tutoring",
+        "skillType": "copywriter/tutor/audio",
         "sections": [
           {"heading": "🎯 Why Copy Matters", "text": "paragraphs..."},
           {"heading": "🧠 Psychology First", "text": "paragraphs..."},

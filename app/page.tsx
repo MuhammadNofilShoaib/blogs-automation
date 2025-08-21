@@ -62,7 +62,7 @@ export default function Blogs() {
         Latest Blogs
       </h1>
 
-      <div className="flex flex-col gap-8">
+      <div className="grid grid-cols-2 gap-8">
         {blogs.map((blog) => (
           <div
             key={blog._id}
