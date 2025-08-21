@@ -6,8 +6,19 @@ interface Blog {
   _id: string;
   title: string;
   slug: { current: string };
-  body: { _type: string; style: string; children: { _type: string; text: string }[] }[];
-  tags: string[];
+  skillType: string;
+  mainImage?: {
+    asset: { _id: string; url: string };
+    alt?: string;
+  };
+  content: {
+    _type: string;
+    style?: string;
+    children?: { _type: string; text: string }[];
+    _key: string;
+    asset?: { _id: string; url: string };
+    alt?: string;
+  }[];
   publishedAt: string;
 }
 
@@ -17,7 +28,7 @@ export default function Blogs() {
 
   const fetchBlogs = async () => {
     try {
-      const res = await fetch("/api/get-blogs");
+      const res = await fetch("/api/get-blogs", { cache: "no-store" });
       const data = await res.json();
       setBlogs(data);
       setLoading(false);
@@ -29,7 +40,7 @@ export default function Blogs() {
 
   useEffect(() => {
     fetchBlogs();
-    const interval = setInterval(fetchBlogs, 5000);
+    const interval = setInterval(fetchBlogs, 5000); // optional auto-refresh
     return () => clearInterval(interval);
   }, []);
 
@@ -55,6 +66,14 @@ export default function Blogs() {
             className="flex flex-col justify-between p-6 border border-gray-200 rounded-2xl shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-1 duration-300 bg-white"
           >
             <div>
+              {blog.mainImage?.asset.url && (
+                <img
+                  src={blog.mainImage.asset.url}
+                  alt={blog.mainImage.alt || blog.title}
+                  className="w-full h-48 object-cover rounded-xl mb-4"
+                />
+              )}
+
               <h2 className="text-2xl font-bold mb-2 hover:text-indigo-600 transition-colors">
                 {blog.title}
               </h2>
@@ -63,29 +82,31 @@ export default function Blogs() {
                 {new Date(blog.publishedAt).toLocaleTimeString()}
               </p>
 
-              {blog.body.map((block, idx) => (
+              {blog.content.map((block) => (
                 <div
-                  key={idx}
+                  key={block._key}
                   className={
                     block.style === "h2"
                       ? "text-xl font-semibold mt-4 text-gray-800"
                       : "mt-2 text-gray-700"
                   }
                 >
-                  {block.children.map((child) => child.text)}
+                  {block.children?.map((child) => child.text)}
+                  {block.asset?.url && (
+                    <img
+                      src={block.asset.url}
+                      alt={block.alt || ""}
+                      className="my-2 rounded-lg"
+                    />
+                  )}
                 </div>
               ))}
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-2">
-              {blog.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium"
-                >
-                  {tag}
-                </span>
-              ))}
+            <div className="mt-4">
+              <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
+                {blog.skillType}
+              </span>
             </div>
           </div>
         ))}

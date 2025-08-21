@@ -1,49 +1,70 @@
-// schemas/post.ts
-import { defineType, defineField } from "sanity";
+import { defineField, defineType } from 'sanity'
 
-export const post = defineType({
-  name: "post",
-  title: "Post",
-  type: "document",
+export const blogPost = defineType({
+  name: 'blogPost',
+  title: 'Blog Post',
+  type: 'document',
   fields: [
     defineField({
-      name: "title",
-      title: "Title",
-      type: "string",
-      validation: (Rule) => Rule.required(),
+      name: 'title',
+      title: 'Title',
+      type: 'string',
     }),
     defineField({
-      name: "slug",
-      title: "Slug",
-      type: "slug",
-      options: { source: "title", maxLength: 96 },
-      validation: (Rule) => Rule.required(),
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {
+        source: 'title',
+        maxLength: 96,
+      },
     }),
-    // defineField({
-    //   name: "mainImage",
-    //   title: "Main Image",
-    //   type: "image",
-    //   options: { hotspot: true },
-    // }),
     defineField({
-      name: "body",
-      title: "Body",
-      type: "array",
+      name: 'skillType',
+      title: 'Skill Type',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Copywriting', value: 'copywriter' },
+          { title: 'Audio Engineering', value: 'audio' },
+          { title: 'Language Learning', value: 'tutor' },
+        ],
+      },
+    }),
+    defineField({
+      name: 'mainImage',
+      title: 'Main Image',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
+    }),
+    defineField({
+      name: 'content',
+      title: 'Content',
+      type: 'array',
       of: [
-        { type: "block" },
-        { type: "image" } // allows images in body
+        { type: 'block' },
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            {
+              name: 'alt',
+              type: 'string',
+              title: 'Alternative text',
+              description: 'Important for SEO and accessibility',
+              validation: (Rule) => Rule.required(),
+            },
+          ],
+        },
       ],
     }),
+
     defineField({
-      name: "tags",
-      title: "Tags",
-      type: "array",
-      of: [{ type: "string" }],
-    }),
-    defineField({
-      name: "publishedAt",
-      title: "Published At",
-      type: "datetime",
+      name: 'publishedAt',
+      title: 'Published At',
+      type: 'datetime',
     }),
   ],
-});
+})
