@@ -1,24 +1,19 @@
 "use client";
 
+import { PortableText, PortableTextBlock,  } from "@portabletext/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import type { PortableTextReactComponents } from "@portabletext/react";
+import Image from "next/image";
+
 
 interface Blog {
   _id: string;
   title: string;
   slug: { current: string };
   skillType: string;
-  mainImage?: {
-    asset: { _id: string; url: string };
-    alt?: string;
-  };
-  content: {
-    _type: string;
-    style?: string;
-    children?: { _type: string; text: string }[];
-    _key: string;
-    asset?: { _id: string; url: string };
-    alt?: string;
-  }[];
+  mainImage?: { asset: { url: string }; alt?: string };
+  content: PortableTextBlock[];
   publishedAt: string;
 }
 
@@ -56,6 +51,54 @@ export default function Blogs() {
       </div>
     );
 
+  // PortableText components
+
+const ptComponents: Partial<PortableTextReactComponents> = {
+  types: {
+    image: ({ value }) => (
+      <Image
+        src={value.asset.url}
+        alt={value.alt || ""}
+        width={800}
+        height={500}
+        className="my-4 rounded-lg"
+      />
+    ),
+  },
+  marks: {
+    strong: ({ children }) => <strong>{children}</strong>,
+    em: ({ children }) => <em>{children}</em>,
+    underline: ({ children }) => <u>{children}</u>,
+    link: ({ children, value }) => (
+      <Link
+        href={value.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline"
+      >
+        {children}
+      </Link>
+    ),
+  },
+  block: {
+    h1: ({ children }) => <h1 className="text-4xl font-bold my-4">{children}</h1>,
+    h2: ({ children }) => <h2 className="text-3xl font-semibold my-3">{children}</h2>,
+    normal: ({ children }) => <p className="my-2">{children}</p>,
+    blockquote: ({ children }) => (
+      <blockquote className="border-l-4 pl-4 italic my-2">{children}</blockquote>
+    ),
+  },
+  list: {
+    bullet: ({ children }) => <ul className="list-disc ml-6 my-2">{children}</ul>,
+    number: ({ children }) => <ol className="list-decimal ml-6 my-2">{children}</ol>,
+  },
+  listItem: {
+    bullet: ({ children }) => <li>{children}</li>,
+    number: ({ children }) => <li>{children}</li>,
+  },
+};
+
+
   return (
     <div className="max-w-[1440px] mx-auto py-12 text-black">
       <h1 className="text-5xl font-extrabold mb-12 text-center text-gradient bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent">
@@ -72,7 +115,6 @@ export default function Blogs() {
               {blog.mainImage?.asset.url && (
                 <img
                   src={blog.mainImage.asset.url}
-                  // src="/blog.jpg"
                   alt={blog.mainImage.alt || blog.title}
                   className="w-full h-auto object-cover rounded-xl mb-4"
                 />
@@ -86,25 +128,8 @@ export default function Blogs() {
                 {new Date(blog.publishedAt).toLocaleTimeString()}
               </p>
 
-              {blog.content?.map((block) => (
-                <div
-                  key={block._key}
-                  className={
-                    block.style === "h2"
-                      ? "text-xl font-semibold mt-4 text-gray-800"
-                      : "mt-2 text-gray-700"
-                  }
-                >
-                  {block.children?.map((child) => child.text)}
-                  {block.asset?.url && (
-                    <img
-                      src={block.asset.url}
-                      alt={block.alt || ""}
-                      className="my-2 rounded-lg"
-                    />
-                  )}
-                </div>
-              ))}
+              {/* Portable Text rendering */}
+              <PortableText value={blog.content} components={ptComponents} />
             </div>
 
             <div className="mt-4">

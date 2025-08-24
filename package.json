@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@portabletext/react": "^4.0.1",
     "@sanity/client": "^7.9.0",
     "@sanity/image-url": "^1.1.0",
     "@sanity/vision": "^4.4.1",
@@ -18,8 +19,12 @@
     "openai": "^5.15.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "remark": "^15.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
     "sanity": "^4.4.1",
-    "styled-components": "^6.1.19"
+    "styled-components": "^6.1.19",
+    "unified": "^11.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
