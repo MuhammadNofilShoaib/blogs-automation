@@ -604,62 +604,191 @@ export async function GET(_req: NextRequest) {
 
     // ====== Prompt for OpenAI =====
     const prompt = `
-      You are a blog writer who writes in the style of Kane "Jacob Frost"—conversational, clear, and engaging. 
-      Mimic his voice and tone: use emojis for headings, rhetorical questions, casual phrases, and a mix of psychology + practical advice. 
-      Make the blog sound human, approachable, and slightly playful, while still being authoritative.
-      and also use SEO friendly keywords and phrases in the headings and text.
+      You are Kane "Jacob Frost" himself, writing blog posts for your own website. Write in your authentic style: conversational, direct, persuasive, and human—like you're chatting with a friend over coffee, but with authority from your expertise. Use casual language (e.g., "You ever...", "Let’s break it down", "Boom!", "Pro tip:"), rhetorical questions, emojis in headings for flair, a mix of psychology insights (e.g., FOMO, social proof, emotional triggers), practical advice, relatable scenarios, and playful touches. Keep it approachable, scannable, with short paragraphs, bold emphasis where needed, and a sense of empathy. Always sound genuine, warm, and non-corporate—avoid sterile or generic tones.
+Infuse your personal voice throughout: Refer to yourself as "I" (e.g., "When I work with clients...", "I’ve seen this a ton..."), share quick anecdotes or examples from your experience, and tie everything back to helping readers solve real problems. Promote your brand subtly but consistently: Position yourself as the expert in copywriting, audio engineering, or English tutoring, and end with a strong, low-pressure CTA offering free value (e.g., discovery chat, audit, or call) via your email kane@jacobfrost.com.au or DM. Sign off with "Kane ‘Jacob Frost’ ✌🏼" in the CTA.
+Ensure the blog is clearly focused on "${chosenSkill}" (NOT the other topics).
+Topic: ${chosenSkill}
+Extra twist: Write this blog through the lens of "${chosenTheme}".
+Also the title and content must be different from any previous blogs in the database. and the title must be different than ${prevTitle}
+The skillType must also be different than the last two blogs, which were ${lastTwo}.
+means the skill type of blogs must be rotated, for e.g. if last one is copywriter, this one must be either audio or tutor. or if last one is audio, this one must be either copywriter or tutor or if last one is tutor, this one must be either copywriter or audio.
+Generate a blog post in JSON format.
+Fields:
 
-      Ensure the blog is clearly focused on "${chosenSkill}" (NOT the other topics). 
-      Topic: ${chosenSkill}  
-      Extra twist: Write this blog through the lens of "${chosenTheme}".
-      Also the title and content must be different from any previous blogs in the database. and the title must be different than ${prevTitle}  
-      The skillType must also be different than the last two blogs, which were ${lastTwo}.
-      means the skill type of blogs must be rotated, for e.g. if last one is copywriter, this one must be either audio or tutor. or if last one is audio, this one must be either copywriter or tutor or if last one is tutor, this one must be either copywriter or audio.
+title (catchy, clear, curiosity-driven, like a YouTube thumbnail—e.g., "How to [Problem] Without [Common Mistake] in 2025")
+skillType ("copywriter", "audio", or "tutor")
+intro (2-4 engaging paragraphs hooking the reader with a relatable scenario, problem, or question; set the stage, explain why it matters, and tease the solutions—make it personal and conversational)
+sections (array of 5-8 items, starting after the intro). Each has:
 
-      Generate a blog post in JSON format.
-      Fields:
-      - title (catchy, clear, curiosity-driven)
-      - skillType ("copywriter", "audio", or "tutor")
-      - sections (array of 4–6 items). Each has:
-        - heading (may include emojis to add style)
-        - text (2–4 short paragraphs, conversational, scannable, and engaging. Use examples, ❌ vs ✅ comparisons, and practical tips where helpful.)
-      - tags (3–6 SEO-friendly tags)
-      - cta (a friendly but persuasive call-to-action at the end, offering either free help, an email, or a call)
+heading (unique, varied, starts with different emojis each time; e.g., 🧠 for psychology, 🎯 for why it matters, 🧱 for structure, 💡 for tips, 🚫 for mistakes, 📣 for wrap-up—avoid repeats or minor tweaks)
+text (3–6 short paragraphs per section; use examples, ❌ vs ✅ comparisons, practical tips, analogies, and tie in psychology where it fits. Keep it scannable with bullets, numbered lists, or bolded points when helpful.)
 
-      Return ONLY JSON. Example:
-      {
-        "title": "Why Most Website Copy Fails (And How to Fix It in 2025) or something about Audio engineering or English tutoring",
-        "skillType": "copywriter/tutor/audio",
+
+tags (5–10 SEO-friendly tags, including keywords like "copywriting tips", "audio mixing secrets", "English fluency hacks", plus general ones like "psychology in marketing", "language learning strategies")
+cta (a friendly, persuasive call-to-action paragraph at the end; offer free help tied to the topic, invite contact via DM or email kane@jacobfrost.com.au, include a link if relevant like "book a call here", and sign off with "Kane ‘Jacob Frost’ ✌🏼")
+
+Return ONLY JSON. Example:
+{
+        "title": "How to Stop Translating in Your Head When Speaking a Foreign Language",
+        "skillType": "tutor",
+        "intro": "Struggling to speak fluently without mentally translating every word? Learn how to train your brain to think in your target language—and speak with confidence and flow.
+        Struggling to speak fluently without mentally translating every word? Learn how to train your brain to think in your target language—and speak with confidence and flow.
+
+-
+
+You’re in the middle of a conversation. You know the words. You know what you want to say. But your brain’s doing a weird dance: thinking in your native language… translating… second-guessing… and then finally speaking (slowly).
+
+It’s exhausting. And frustrating.
+
+In this article, we’re going to break down exactly why your brain translates by default, and more importantly, how to train it to think in the target language instead—so you can speak more fluently, naturally, and confidently. ...",
         "sections": [
-          {"heading": "🎯 Why it matters either Copywriter/Audio/Language learning", "text": "paragraphs..."},
-          {"heading": "🧠 Psychology First", "text": "paragraphs..."},
-          {"heading": "✅ Features vs Benefits", "text": "paragraphs..."},
-          {"heading": "💬 Human, Not Corporate", "text": "paragraphs..."},
-          {"heading": "🚀 Final Words", "text": "wrap-up..."}
+          {"heading1": "❓Why Do We Translate in Our Heads?", "text": "Short answer: because your brain’s just doing what it knows best.
+
+When you're learning a new language, your brain doesn’t have all the structures built yet. So it leans on your native language as a reference point—a bridge. It finds the words you want to say, then tries to reconstruct them in your second language.
+
+At first, this makes sense. It’s a survival tool. But after a certain point, this habit slows you down, and becomes a barrier to real fluency.
+
+🧠 Think of it like this:
+
+Translating mid-sentence is like trying to play piano while reading a sheet of music written in another language. Technically possible, but… clunky."},
+          {"heading": "🐢 Why Translating Hurts Fluency", "text": "Let’s break it down.
+
+When you translate in your head:
+
+You speak more slowly
+You lose confidence mid-sentence
+Your grammar often comes out wrong (because you're translating structure, not just words)
+You freeze when a word doesn’t exist in your native language (or has no direct equivalent)
+Worst of all? You’re using too much mental energy. In real conversation, you don’t have time to pause and think through every sentence like a math problem. That pressure builds hesitation… and kills flow.
+
+The goal is to move from thinking in Language A + converting → to thinking directly in Language B.
+
+Let’s talk about how to make that happen...."},
+          {"heading": "✅ How to Train Your Brain to Think in a Foreign Language", "text": "This is where the fun starts. Below are six science-backed and experience-proven methods to reprogram your brain and ditch the internal translator.
+
+🟩 1. Start with Words You Already Know
+You don’t need full sentences to begin thinking in your target language. Start by swapping in familiar words throughout your day.
+
+Examples:
+
+“Water”
+“Hungry”
+“Phone”
+“Left, right, straight”
+“Sleepy. Tired. Happy.”
+Build tiny associations—thought → word.
+
+The more often you access that word in context, the faster it becomes your brain’s default.
+
+🟩 2. Narrate Your Life (Out Loud or Internally)
+Yes, you might feel a bit silly. But this trick is powerful.
+
+Simply describe what you’re doing in real time, either out loud (if you’re alone) or in your head. You’re literally rewiring your brain to form ideas directly in the new language.
+
+Examples:
+
+“I’m making coffee.”
+“I forgot my keys again.”
+“I’m walking to the store. It’s hot today.”
+Over time, this will feel more natural—and less like a performance.
+
+🟩 3. Use Flashcards Without Your Native Language
+If you’re using flashcards with your native language on one side and the new word on the other—stop.
+
+Instead, use:
+
+Images
+Contextual prompts
+Fill-in-the-blank style cards
+Full sentences as examples
+You want to build a direct link between the new word and its meaning, not its translation.
+
+Tools like Anki or Quizlet let you build custom decks with images or sentence-level cues.
+
+🟩 4. Journal or Record Voice Notes in the Target Language
+Output = fluency fuel.
+
+Writing or speaking daily in your target language helps you slowly organise your thoughts, without pressure.
+
+Start small:
+
+2–3 sentences about your day
+What you’re planning to do tomorrow
+A short “thank you” message to a fake friend
+Bonus: Record yourself on your phone and listen back a week later. You’ll hear your growth—and build confidence.
+
+🟩 5. Learn Phrases and Chunks (Not Just Words)
+Single vocab words are great—but fluency comes from automatic phrases that just roll off your tongue.
+
+Instead of memorising:
+
+“go” + “to” + “the” + “gym”
+Learn the whole chunk:
+
+“I’m heading to the gym.”
+“I’ll be back in a bit.”
+“I’m just looking, thanks.”
+This method builds natural rhythm and sentence structure—no more mentally building sentences piece by piece.
+
+🟩 6. Speak with Someone Who Matches Your Level
+Having a real conversation partner is key. But not just anyone—you want someone who will:
+
+Match your pace
+Speak clearly and slowly
+Correct you gently
+Encourage you to express yourself freely
+This is where a professional tutor makes a massive difference. A good tutor won’t just “drill” you—they’ll create space for genuine, level-appropriate expression, and gently push you out of translation mode."},
+          {"heading": "⚠️ Avoid These Translation Traps", "text": "Let’s be honest—sometimes we’re our own worst enemy. If you’re stuck in translation mode, check if you’re doing any of these:
+
+❌ Looking up every single word
+Try to guess meaning from context before diving into the dictionary. It’s okay to not understand everything right away. Your brain will often fill the gaps naturally.
+
+❌ Using Google Translate to write full sentences
+It’s tempting—but dangerous. You don’t learn anything that way. Instead, try to build the sentence yourself. If you’re stuck, then check and compare.
+
+❌ Learning grammar rules in your native language
+Try learning grammar through examples and repetition, not memorising textbook-style explanations in your first language. Example: Don’t learn “present perfect tense = have + past participle.” Instead, absorb it from examples: “I’ve seen that movie.” / “She’s just left.”"},
+          {"heading": "🕒 How Long Does It Take to Think in Another Language?", "text": "Short answer: not as long as you think.
+
+With daily practice (15–30 mins of active output), most learners can start thinking in simple phrases within a few weeks. Full sentence fluency takes longer, but the shift happens gradually.
+
+It’s not about “being fluent.” It’s about making progress visible and breaking the dependency on your native language.
+
+Give yourself permission to start messy—and improve over time."},
+{"heading": "🧠 Final Thoughts: You’re Closer Than You Think", "text": "The transition from translating to thinking in a language is one of the most liberating feelings in the world. It’s where fluency really starts to take root.
+
+And the best part? You don’t need to wait until you “know more.” You can start today. Right now.
+
+Use the techniques above, stay consistent, and be kind to yourself when you stumble. You’re not failing—you’re rewiring your brain to do something amazing."},
+{"heading": "📣 Wanna Learn English Without Overthinking?", "text": "Did you know: having a professional and certified tutor with experience learning languages can seriously speed up your language learning process?
+
+If you're interested in optimising your language learning and want to reach your goals ASAP, don't hesitate to reach out at kane@jacobfrost.com.au, or book a free call here to discuss your needs and goals.
+
+Let’s work together to train your brain for real fluency—without translation delays, stress, or guesswork."}
         ],
-        "tags": ["copywriting","audio","language learning", "english tutor" ,"marketing","website","conversion","psychology" etc],
-        "cta": "👉🏽 Ready to upgrade your copy? DM me or email kane@jacobfrost.com.au for a free discovery chat."
+        "tags": ["audio engineering", "mixing tips", "music production", "psychology in sound", "home studio hacks"]
       }
+Rules:
 
-      Rules:
-    - DO NOT repeat titles or headings from past generations.
-    - Use fresh metaphors, examples, and hooks every time.
-    - If skillType = "audio", focus on music/audio/production/mixing/mastering.
-    - If skillType = "tutor", focus on English tutoring, language learning, or study hacks.
-    - If skillType = "copywriter", focus on persuasion, marketing, and psychology.
-    - Headings must be **unique and varied** (not just small wording changes).
-    - Title must be catchy but DIFFERENT from previous attempts.
-    - Each heading must start differently and use different emojis.
-    - Think of the title as a YouTube thumbnail text: unique, curiosity-driven, no recycling.
+DO NOT repeat titles, headings, phrases, metaphors, or examples from past generations or the example blogs provided.
+Use fresh, original hooks, analogies (e.g., compare to everyday life like driving or cooking), and content every time—think creatively.
+If skillType = "audio", focus on music/audio/production/mixing/mastering, with practical studio tips and psychological elements like how sound affects emotions.
+If skillType = "tutor", focus on English tutoring, language learning, study hacks, fluency building, with psychology of learning and real-world conversation tips.
+If skillType = "copywriter", focus on persuasion, marketing, copy that converts, website/sales copy, with psychology triggers like FOMO or social proof.
+Headings must be unique and varied (different structures, emojis, and wording—no recycling even slightly).
+Title must be catchy but DIFFERENT from previous attempts—curiosity-driven, benefit-oriented, and include year or timely hook if it fits.
+Each heading must start differently and use different emojis; vary section types (e.g., why it happens, how to fix, mistakes to avoid, pro tips, final thoughts).
+Incorporate SEO: Naturally weave keywords into title, headings, and text (e.g., "audio mixing techniques 2025", "improve English fluency fast").
+Always promote your brand: In intro/sections, mention your expertise casually; in CTA, tie back to your services as a copywriter/audio expert/tutor.
+Match the example blogs' tone exactly: Start with a problem scenario, use lists/numbering for advice, include ❌ for bad examples and ✅ for good, end with empowering wrap-up.
+Do not use em and en dashes; use hyphens, commas, and periods only.
 
-    Here are some example blogs of Kane Jacob Frost to take analysis and must sound like them in terms of style and tone, but NOT to copy any titles, headings, or phrases from them:
-
+Here are some example blogs of Kane Jacob Frost to analyze for style, tone, structure, and voice (intro hook, personal insights, psychology ties, practical lists, mistakes sections, strong CTA)—mimic closely but DO NOT copy any titles, headings, phrases, examples, or content from them:
     How to Make Your Website Pop with Engaging Copy (That Actually Converts)
 6/27/2025
 How to Make Your Website Pop with Engaging Copy (That Actually Converts)
 Perhaps you’ve built a perfectly designed website for your business, but you’re not getting any traffic… Here are a few recommendations and solutions.
 
--
 
 You ever land on a website that looks chef’s kiss amazing—stunning visuals, slick animations, dreamy colour palette—but for some reason… it just doesn’t hit? You scroll through, read a few lines, and still don’t quite get what they do, how they’re different, or why you should care.
 
@@ -960,6 +1089,8 @@ Let’s work together to train your brain for real fluency—without translation
 
     const blog: GeneratedBlog = JSON.parse(match[0]);
 
+    console.log("✅ Generated blog:", blog);
+
     // ===== Build portable text content =====
     const content: PortableTextBlock[] = [];
     for (const sec of blog.sections) {
@@ -995,21 +1126,21 @@ Let’s work together to train your brain for real fluency—without translation
     });
 
     return new Response(
-  JSON.stringify({ ok: true, id: doc._id, slug, title: blog.title }),
-  { headers: { "Content-Type": "application/json" } }
-);
+      JSON.stringify({ ok: true, id: doc._id, slug, title: blog.title }),
+      { headers: { "Content-Type": "application/json" } }
+    );
 
-} catch (err: unknown) {
-  let message = "Unknown error";
-  if (err instanceof Error) {
-    message = err.message;
+  } catch (err: unknown) {
+    let message = "Unknown error";
+    if (err instanceof Error) {
+      message = err.message;
+    }
+    console.error("❌ Blog generation failed:", message);
+    return new Response(
+      JSON.stringify({ ok: false, error: message }),
+      { status: 500 }
+    );
   }
-  console.error("❌ Blog generation failed:", message);
-  return new Response(
-    JSON.stringify({ ok: false, error: message }),
-    { status: 500 }
-  );
-}
 }
 
 export const POST = GET;
