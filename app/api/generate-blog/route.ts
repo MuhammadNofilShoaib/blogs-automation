@@ -647,8 +647,8 @@ export const maxDuration = 60;
 
 // ======= Sanity Setup =======
 const sanity = createClient({
-  projectId: process.env.SANITY_PROJECT_ID_B!,
-  dataset: process.env.SANITY_DATASET_B!,
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID_B!,
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET_B!,
   apiVersion: "2023-10-01",
   token: process.env.SANITY_API_TOKEN_B,
   useCdn: false,
