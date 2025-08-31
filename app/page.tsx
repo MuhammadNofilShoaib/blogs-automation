@@ -143,16 +143,74 @@
 //     </div>
 //   );
 // }
+'use client';
+import Link from 'next/link';
+import React, { useState } from 'react';
 
-import Link from 'next/link'
-import React from 'react'
+function Page() {
+  const [auth, setAuth] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-function page() {
+  const Authenticate = () => {
+    // Predefined credentials
+    const validEmail = "kane@jacobfrost.com.au";
+    const validPassword = "blogsautomation";
+
+    if (email === validEmail && password === validPassword) {
+      setAuth(true);
+      setError('');
+    } else {
+      setError('Invalid email or password');
+      setAuth(false);
+    }
+  };
+
   return (
-    <div>
-      <Link href="/api/generate-blog" className='flex justify-center items-center text-lg font-bold p-6 bg-yellow-300 text-black border-2 border-black rounded-lg hover:bg-yellow-500'>Generate Blog</Link>
+    <div className="h-screen flex flex-col justify-center items-center">
+      {!auth && (
+        <div className="flex flex-col justify-center items-center gap-5 bg-gradient-to-r from-cyan-300 to-white p-10 rounded-lg shadow-[0px_0px_100px_#ffffff80] border-black/20 border">
+          <div className="flex flex-col justify-start items-start gap-1">
+            <h1 className="text-black/70 font-mono font-semibold text-xl">Email:</h1>
+            <input
+              type="text"
+              placeholder="Enter your E-Mail:"
+              className="border border-black/70 p-3 rounded-lg"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col justify-start items-start gap-1">
+            <h1 className="text-black/70 font-mono font-semibold text-xl">Password:</h1>
+            <input
+              type="password"
+              placeholder="Enter your Password:"
+              className="border border-black/70 p-3 rounded-lg"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={Authenticate}
+            className="bg-green-500 py-3 px-5 rounded-lg font-semibold text-white hover:bg-green-700 duration-300 ease-in-out cursor-pointer"
+          >
+            Authenticate
+          </button>
+          {error && <p className="text-red-600 font-semibold">{error}</p>}
+        </div>
+      )}
+
+      {auth && (
+        <Link
+          href="/api/generate-blog"
+          className="flex justify-center items-center text-lg font-semibold px-6 py-4 bg-green-500 text-white rounded-lg hover:bg-green-600 hover:shadow-[0px_0px_100px_green] duration-1000 ease-in-out"
+        >
+          Generate Blog
+        </Link>
+      )}
     </div>
-  )
+  );
 }
 
-export default page
+export default Page;

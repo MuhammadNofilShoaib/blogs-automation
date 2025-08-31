@@ -17,6 +17,7 @@
     "@sanity/vision": "^4.4.1",
     "next": "15.4.7",
     "next-sanity": "^10.0.12",
+    "node-fetch": "^3.3.2",
     "openai": "^5.15.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",

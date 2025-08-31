@@ -735,15 +735,36 @@ function parseTextToPortableText(
   return children;
 }
 
+async function getPexelsImage(query: string): Promise<string | null> {
+  try {
+    const response = await fetch(
+      `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1`,
+      {
+        headers: { Authorization: process.env.PEXELS_API_KEY! },
+      }
+    );
+
+    const data = await response.json();
+    if (data.photos && data.photos.length > 0) {
+      return data.photos[0].src.medium; // choose size: tiny, small, medium, large
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching Pexels image:", error);
+    return null;
+  }
+}
+
+
 // ======= Main Handler =======
 export async function GET(_req: NextRequest) {
   try {
-    // Upload a default image
-    const imagePath = path.join(process.cwd(), "public", "blog.jpg");
-    const fileBuffer = fs.readFileSync(imagePath);
-    const uploadedImage = await sanity.assets.upload("image", fileBuffer, {
-      filename: "blog.jpg",
-    });
+    // // Upload a default image
+    // const imagePath = path.join(process.cwd(), "public", "blog.jpg");
+    // const fileBuffer = fs.readFileSync(imagePath);
+    // const uploadedImage = await sanity.assets.upload("image", fileBuffer, {
+    //   filename: "blog.jpg",
+    // });
 
     // Randomly pick a skill type
     const skillTypes: ("copywriter" | "audio" | "tutor")[] = ["copywriter", "audio", "tutor"];
@@ -790,50 +811,61 @@ export async function GET(_req: NextRequest) {
     const lastTwo = existingSkills.length ? existingSkills.map(s => s.skillType) : [];
 
     // ====== Prompt for OpenAI =====
-    const prompt = `
-        You are Kane "Jacob Frost," writing a blog in your authentic style: **conversational, direct, persuasive, playful, and high-energy**. Imagine you’re chatting with a friend over coffee, but with expert authority. Use casual touches (e.g., "You ever...", "Boom!", "Pro tip:"), rhetorical questions, relatable scenarios, emojis in headings, and psychological insights (FOMO, social proof, emotional triggers). Use **short paragraphs (max 3 sentences each)** for scannability.
+ const prompt = `
+You are Kane "Jacob Frost," writing a blog in your authentic style: conversational, playful, persuasive, and high-energy. Imagine you are talking to a student aged 16–22, explaining ideas in a relatable, friendly way. Use short paragraphs (max 3 sentences), rhetorical questions, casual language (e.g., "You ever…", "Boom!", "Pro tip:"), emojis in headings, and psychological or practical insights. Make it scannable with headings, bullet points, numbered lists, checklists, tables, and side notes.
 
-        🔥 **Formatting rules (important):**
-        - Use **headings with emojis** (🎯, 🚀, 🤯, ✅, ❌, etc.)
-        - Use **bullet points (•, ➡️, ✨)** and **numbered lists (1️⃣, 2️⃣, 3️⃣)** frequently
-        - Mix in **checklists (☑️/❌)**, comparisons (❌ vs ✅), and arrows (→) for flow
-        - Bold and italicize important words for emphasis
-        - Never output plain walls of text; each section must have **visual rhythm**
+🔥 Formatting rules:
+- Headings with emojis (🎯, 🚀, 🤯, ✅, ❌, 🎧, etc.)
+- Mix bullet points (•, ➡️, ✨), numbered lists (1️⃣, 2️⃣, 3️⃣), and mini comparisons (❌ vs ✅) within sections
+- Include at least 2 different list or table styles per blog
+- Bold and italicize key points
+- Add short examples, analogies, or mini-stories where relevant
+- Keep content visually engaging for UI/UX, breaking long text blocks
 
-        📄 **Blog requirements:**
-        - **Title**: Catchy, curiosity-driven, unique (≠ ${prevTitle})
-        - **Skill type** rotates (≠ last two: ${lastTwo})
-        - **Intro**: 2–3 short paras (hook, tease solutions, emotional pull)
-        - **Sections**: 5–7 items, each with:
-          - Unique **emoji heading**
-          - 3–6 short paras **PLUS at least one list or comparison table style** 
-        - **Tags**: 6–8 SEO-friendly keywords
-        - **CTA**: Persuasive, friendly, inviting readers to contact via DM/email kane@jacobfrost.com.au, signed off with "Kane ‘Jacob Frost’ ✌🏼"
+📄 Blog requirements:
+- Title: catchy, curiosity-driven, unique (≠ ${prevTitle})
+- Skill type rotates (≠ last two: ${lastTwo}) must be "${chosenSkill}"
+- Intro: 2–3 short paras using ONE of these hooks (choose randomly):
+  1. Ask a relatable question
+  2. Present a short story or scenario
+  3. Share an intriguing fact or statistic
+  4. Highlight a common student problem and tease the solution
+- Sections: 5–7 items, each with:
+  - Unique emoji heading
+  - 3–6 short paras
+  - At least one list, table, or comparison
+  - Optional mini example, tip, or side note
+- Tags: 6–8 SEO-friendly keywords
+- CTA: persuasive, friendly, playful, inviting readers to contact via DM/email kane@jacobfrost.com.au, signed off with "Kane ‘Jacob Frost’ ✌🏼"
 
-        ⚡ **Important rules:**
-        - No generic text — must feel **rich, witty, playful, and professional**
-        - Avoid repeating metaphors, phrases, or headings
-        - Use everyday analogies (cooking, driving, gym, office life)
-        - Keep content scannable and visually engaging with **lists, bullets, emojis**
-        - Always include at least 2 creative list styles per blog
+⚡ Important rules:
+- Use student-relevant examples (school, hobbies, gaming, daily life)
+- Avoid repeating metaphors, phrases, or headings
+- Make intros and sections varied and human-like
+- Include bullet points for UI/UX clarity
+- Mimic the style of these examples (concise, relatable, action-oriented, playful, human tone):
+  - "What Makes Copy Convert? The Psychology Behind Words That Sell"
+  - "How to Learn a Language Fast: What Actually Works (Backed by Science)"
 
-        Return **ONLY JSON** in this structure:
-        {
-          "title": "Catchy curiosity title",
-          "skillType": "copywriter | audio | tutor",
-          "intro": "2–3 paras",
-          "sections": [
-            {"heading": "Emoji + creative heading", "text": "3–6 paras with examples, tips, lists, comparisons, psychology"},
-            ...
-          ],
-          "tags": ["keyword1", "keyword2", ...],
-          "cta": "Persuasive CTA with Kane branding + email kane@jacobfrost.com.au"
-        }
-      `;
+Return ONLY JSON in this structure:
+{
+  "title": "Catchy curiosity title",
+  "skillType": "copywriter | audio | tutor",
+  "intro": "2–3 paras",
+  "sections": [
+    {"heading": "Emoji + creative heading", "text": "3–6 paras with examples, tips, lists, comparisons, psychology"},
+    ...
+  ],
+  "tags": ["keyword1", "keyword2", ...],
+  "cta": "Persuasive CTA with Kane branding + email kane@jacobfrost.com.au"
+}
+`;
 
 
-    console.log(prevTitle)
+    // console.log(prevTitle)
     console.log(lastTwo)
+    console.log(chosenSkill)
+
     // ===== Generate blog with OpenAI =====
     const response = await openai.chat.completions.create({
       model: "gpt-4",
@@ -859,6 +891,27 @@ export async function GET(_req: NextRequest) {
     } catch (err) {
       throw new Error("Failed to parse OpenAI response as JSON");
     }
+
+    // Fetch a relevant image from Pexels based on blog title or theme
+    const imageQuery = blog?.title || chosenTheme || "blog"; // fallback to theme if title undefined
+    const pexelsImageUrl = await getPexelsImage(imageQuery);
+
+    let uploadedImage;
+    if (pexelsImageUrl) {
+      // Fetch image buffer from URL
+      const imageBuffer = await fetch(pexelsImageUrl).then(res => res.arrayBuffer());
+      uploadedImage = await sanity.assets.upload("image", Buffer.from(imageBuffer), {
+        filename: `${slugify(imageQuery)}.jpg`,
+      });
+    } else {
+      // fallback to default local image
+      const imagePath = path.join(process.cwd(), "public", "blog.jpg");
+      const fileBuffer = fs.readFileSync(imagePath);
+      uploadedImage = await sanity.assets.upload("image", fileBuffer, {
+        filename: "blog.jpg",
+      });
+    }
+
 
     // console.log("✅ Generated blog:", blog);
 
