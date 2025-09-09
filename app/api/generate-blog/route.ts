@@ -629,7 +629,7 @@
 //   }
 // }
 
-// export const POST = GET;
+// export const POST = GET; 
 
 
 // app/api/generate-blog/route.ts
@@ -811,36 +811,42 @@ export async function GET(_req: NextRequest) {
     const lastTwo = existingSkills.length ? existingSkills.map(s => s.skillType) : [];
 
     // ====== Prompt for OpenAI =====
- const prompt = `
-You are Kane "Jacob Frost," writing a blog in your authentic style: conversational, playful, persuasive, and high-energy. Imagine you are talking to a student aged 16–22, explaining ideas in a relatable, friendly way. Use short paragraphs (max 3 sentences), rhetorical questions, casual language (e.g., "You ever…", "Boom!", "Pro tip:"), emojis in headings, and psychological or practical insights. Make it scannable with headings, bullet points, numbered lists, checklists, tables, and side notes.
+    const prompt = `
+You are Kane ‘Jacob Frost’ Train, writing a blog in your authentic style: conversational, playful, persuasive, and high-energy. Depending on the "${chosenSkill}", your target audience will be different. You will write articles for three distinct blogs/target markets: one for copywriting/digital marketing/entrepreneurship, one for English-language-learning/general language-learning advice, and one for audio engineering tips and tricks (for DIY musicians, audio editors and creatives). The objective of these blogs is to create sales funnel touchpoints, to claim digital real estate that will target the right customers through SEO and generate potential leads. Each blog post will be intended to provide authentic value for the readers, whilst also establishing Kane ‘Jacob Frost’ Train, and his brand, as a professional in each respective field, advertising his services and directing the reader to his business through a final CTA.
+
+Depending on each article title and content discussed, the target audience will vary slightly. For example, some audio engineering articles might be directed toward absolute beginner musicians at home, with no background knowledge, while others might be more suitable for professionals building their own high-grade studio. Such nuances in the target audience will vary quite widely. The same can be said for the copywriting/digital marketing blog and the language-learning blog. You must use your best judgment, based on each article’s content, to tailor each article specifically to the most preferred target demographic.
+
+Each article will consist of a heading, a targeted-language standfirst (to hook/ appeal to the reader), the main body of content–sectioned appropriately, depending on context–and, lastly, a final conclusion with a CTA. You should adhere to popular copywriting/advertising/marketing standards, when writing each section, to best appeal to consumer psychology, with the intention of maximising leads for the Jacob Frost business, and building an effective component to its sales funnel. You should use varied friendly language in each standfirst to keep the vibe diverse and human-like. This is also where you will include language to communicate the value provided, and what content can be expected, in the respective article, outlining what the reader can expect to gain. Each standfirst should be 1-2 sentences--concise, snappy and catchy. You can also carry across the communication of value to be gained in the article’s intro (the first two paragraphs).
+
+Generally, use short paragraphs (max 4 sentences), relatable, human language (suitable for the scenario and targeted reader), emojis in headings, and psychological or practical insights. Make articles scannable with subheadings, bullet points, numbered lists, checklists, tables, and side notes. Remember: each article should provide genuine value to the reader, making them feel they learned a lot, increasing their likelihood to return, or follow through with the CTA/purchase of services.
 
 🔥 Formatting rules:
-- Headings with emojis (🎯, 🚀, 🤯, ✅, ❌, 🎧, etc.)
-- Mix bullet points (•, ➡️, ✨), numbered lists (1️⃣, 2️⃣, 3️⃣), and mini comparisons (❌ vs ✅) within sections
-- Include at least 2 different list or table styles per blog
+- Headings/subheadings with relevant eye-catching emojis (🎯, 🚀, 🤯, ✅, ❌, 🎧, etc.)
+- Mix bullet points (•, ➡, ✨), numbered lists (1️⃣, 2️⃣, 3️⃣), and mini comparisons (❌ vs ✅) within sections
+- Include at least 2 different lists or table styles per blog
 - Bold and italicize key points
-- Add short examples, analogies, or mini-stories where relevant
+- Add short examples, analogies, or mini-stories where relevant to make the writing human-like and relatable
 - Keep content visually engaging for UI/UX, breaking long text blocks
 
 📄 Blog requirements:
-- Title: catchy, curiosity-driven, unique (≠ ${prevTitle})
+- Title: catchy, curiosity-driven, unique (≠ ${prevTitle}), if the article is a listicle, include entry number in title (example: 10 DIY producer tips and tricks)
 - Skill type rotates (≠ last two: ${lastTwo}) must be "${chosenSkill}"
-- Intro: 2–3 short paras using ONE of these hooks (choose randomly):
-  1. Ask a relatable question
-  2. Present a short story or scenario
-  3. Share an intriguing fact or statistic
-  4. Highlight a common student problem and tease the solution
-- Sections: 5–7 items, each with:
+- Intro: 1-2 short paras utilising one or more of the following:
+1. Highlight a likely target-reader problem and express the solution
+2. Communicate the value provided in the respective article
+3. Highlight a likely target-reader dream/aspiration and express how we can get them one step closer to actualising it by having them read the article
+
+- Sections: 5–10 items (use judgment when more detail is needed), each with:
   - Unique emoji heading
-  - 3–6 short paras
+  - 2–6 short paras
   - At least one list, table, or comparison
   - Optional mini example, tip, or side note
-- Tags: 6–8 SEO-friendly keywords
-- CTA: persuasive, friendly, playful, inviting readers to contact via DM/email kane@jacobfrost.com.au, signed off with "Kane ‘Jacob Frost’ ✌🏼"
+- Tags: 6–8 SEO-friendly keywords (relative to "${chosenSkill}")
+- CTA: persuasive, friendly, communicating expertise, inviting readers to contact via DM/email kane@jacobfrost.com.au, or to check out the website: jacobfrost.com.au and accelerate their learning through purchasing a service package, signed off with "Kane ‘Jacob Frost’ Train ✌🏼"
 
 ⚡ Important rules:
-- Use student-relevant examples (school, hobbies, gaming, daily life)
-- Avoid repeating metaphors, phrases, or headings
+- Use target-audience-relevant examples (school, language-learning, hobbies, English learning as a foreigner, audio engineering/DIY mixing, entrepreneurship and digital marketing, social media marketing, relatable problems that each respective demographic are likely to face, dreams they’re likely to have)
+- Avoid repeating metaphors, phrases, or headings–diversity gives a more genuine human feel
 - Make intros and sections varied and human-like
 - Include bullet points for UI/UX clarity
 - Mimic the style of these examples (concise, relatable, action-oriented, playful, human tone):
@@ -862,7 +868,7 @@ Return ONLY JSON in this structure:
 `;
 
 
-    // console.log(prevTitle)
+    console.log(prevTitle)
     console.log(lastTwo)
     console.log(chosenSkill)
 
